@@ -124,7 +124,7 @@ class ChromeRuntime extends ChromeApi {
     _onBrowserUpdateAvailable = new ChromeStreamController.noArgs(getApi, 'onBrowserUpdateAvailable');
     _onConnect = new ChromeStreamController<Port>.oneArg(getApi, 'onConnect', _createPort);
     _onConnectExternal = new ChromeStreamController<Port>.oneArg(getApi, 'onConnectExternal', _createPort);
-    _onMessage = new ChromeStreamController<OnMessageEvent>.threeArgs(getApi, 'onMessage', _createOnMessageEvent);
+    _onMessage = new ChromeStreamController<OnMessageEvent>.threeArgs(getApi, 'onMessage', _createOnMessageEvent, true);
     _onMessageExternal = new ChromeStreamController<OnMessageExternalEvent>.threeArgs(getApi, 'onMessageExternal', _createOnMessageExternalEvent);
     _onRestartRequired = new ChromeStreamController<OnRestartRequiredReason>.oneArg(getApi, 'onRestartRequired', _createOnRestartRequiredReason);
   }
@@ -146,7 +146,7 @@ class ChromeRuntime extends ChromeApi {
    * inside the current extension/app. If the background page is an event page,
    * the system will ensure it is loaded before calling the callback. If there
    * is no background page, an error is set.
-   * 
+   *
    * Returns:
    * The JavaScript 'window' object for the background page.
    */
@@ -160,13 +160,13 @@ class ChromeRuntime extends ChromeApi {
 
   /**
    * Open your Extension's options page, if possible.
-   * 
+   *
    * The precise behavior may depend on your manifest's
    * `[options_ui](optionsV2)` or `[options_page](options)` key, or what Chrome
    * happens to support at the time. For example, the page may be opened in a
    * new tab, within chrome://extensions, within an App, or it may just focus an
    * open options page. It will never cause the caller page to reload.
-   * 
+   *
    * If your Extension does not declare an options page, or Chrome failed to
    * create one for some other reason, the callback will set [lastError].
    */
@@ -181,7 +181,7 @@ class ChromeRuntime extends ChromeApi {
   /**
    * Returns details about the app or extension from the manifest. The object
    * returned is a serialization of the full [manifest file](manifest.html).
-   * 
+   *
    * Returns:
    * The manifest details.
    */
@@ -194,10 +194,10 @@ class ChromeRuntime extends ChromeApi {
   /**
    * Converts a relative path within an app/extension install directory to a
    * fully-qualified URL.
-   * 
+   *
    * [path] A path to a resource within an app/extension expressed relative to
    * its install directory.
-   * 
+   *
    * Returns:
    * The fully-qualified URL to the resource.
    */
@@ -211,7 +211,7 @@ class ChromeRuntime extends ChromeApi {
    * Sets the URL to be visited upon uninstallation. This may be used to clean
    * up server-side data, do analytics, and implement surveys. Maximum 255
    * characters.
-   * 
+   *
    * [url] URL to be opened after the extension is uninstalled. This URL must
    * have an http: or https: scheme. Set an empty string to not open a new tab
    * upon uninstallation.
@@ -240,14 +240,14 @@ class ChromeRuntime extends ChromeApi {
    * since chrome already does automatic checks every few hours, and you can
    * listen for the [runtime.onUpdateAvailable] event without needing to call
    * requestUpdateCheck.
-   * 
+   *
    * This method is only appropriate to call in very limited circumstances, such
    * as if your extension/app talks to a backend service, and the backend
    * service has determined that the client extension/app version is very far
    * out of date and you'd like to prompt a user to update. Most other uses of
    * requestUpdateCheck, such as calling it unconditionally based on a repeating
    * timer, probably only serve to waste client, network, and server resources.
-   * 
+   *
    * Returns:
    * [status] Result of the update check.
    * [details] If an update is available, this contains more information about
@@ -277,7 +277,7 @@ class ChromeRuntime extends ChromeApi {
    * If called with a value of -1, the reboot will be cancelled. It's a no-op in
    * non-kiosk mode. It's only allowed to be called repeatedly by the first
    * extension to invoke this API.
-   * 
+   *
    * [seconds] Time to wait in seconds before rebooting the device, or -1 to
    * cancel a scheduled reboot.
    */
@@ -297,12 +297,12 @@ class ChromeRuntime extends ChromeApi {
    * Note that this does not connect to any listeners in a content script.
    * Extensions may connect to content scripts embedded in tabs via
    * [tabs.connect].
-   * 
+   *
    * [extensionId] The ID of the extension or app to connect to. If omitted, a
    * connection will be attempted with your own extension. Required if sending
    * messages from a web page for [web
    * messaging](manifest/externally_connectable.html).
-   * 
+   *
    * Returns:
    * Port through which messages can be sent and received. The port's $(ref:Port
    * onDisconnect) event is fired if the extension/app does not exist.
@@ -316,9 +316,9 @@ class ChromeRuntime extends ChromeApi {
   /**
    * Connects to a native application in the host machine. See [Native
    * Messaging](nativeMessaging) for more information.
-   * 
+   *
    * [application] The name of the registered application to connect to.
-   * 
+   *
    * Returns:
    * Port through which messages can be sent and received with the application
    */
@@ -337,15 +337,15 @@ class ChromeRuntime extends ChromeApi {
    * if a different extension. Note that extensions cannot send messages to
    * content scripts using this method. To send messages to content scripts, use
    * [tabs.sendMessage].
-   * 
+   *
    * [extensionId] The ID of the extension/app to send the message to. If
    * omitted, the message will be sent to your own extension/app. Required if
    * sending messages from a web page for [web
    * messaging](manifest/externally_connectable.html).
-   * 
+   *
    * [message] The message to send. This message should be a JSON-ifiable
    * object.
-   * 
+   *
    * Returns:
    * The JSON response object sent by the handler of the message. If an error
    * occurs while connecting to the extension, the callback will be called with
@@ -361,11 +361,11 @@ class ChromeRuntime extends ChromeApi {
 
   /**
    * Send a single message to a native application.
-   * 
+   *
    * [application] The name of the native messaging host.
-   * 
+   *
    * [message] The message that will be passed to the native messaging host.
-   * 
+   *
    * Returns:
    * The response message sent by the native messaging host. If an error occurs
    * while connecting to the native messaging host, the callback will be called
@@ -424,7 +424,7 @@ class OnMessageEvent {
   /**
    * The message sent by the calling script.
    * `optional`
-   * 
+   *
    * The message sent by the calling script.
    */
   final dynamic message;
@@ -453,7 +453,7 @@ class OnMessageExternalEvent {
   /**
    * The message sent by the calling script.
    * `optional`
-   * 
+   *
    * The message sent by the calling script.
    */
   final dynamic message;
